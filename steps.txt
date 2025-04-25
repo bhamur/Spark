@@ -1,0 +1,14 @@
+0. wget https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-yarn-server-web-proxy/3.3.1/hadoop-yarn-server-web-proxy-3.3.1.jar
+wget https://repo1.maven.org/maven2/org/apache/hadoop/thirdparty/hadoop-shaded-guava/1.1.1/hadoop-shaded-guava-1.1.1.jar
+ wget https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-common/3.3.1/hadoop-common-3.3.1.jar
+ wget https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-runtime/3.3.1/hadoop-client-runtime-3.3.1.jar
+ wget https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-client-api/3.3.1/hadoop-client-api-3.3.1.jar
+wget https://repo1.maven.org/maven2/org/apache/hadoop/hadoop-aws/3.3.1/hadoop-aws-3.3.1.jar
+wget https://repo1.maven.org/maven2/io/delta/delta-storage/2.4.0/delta-storage-2.4.0.jar
+wget https://repo1.maven.org/maven2/io/delta/delta-core_2.12/2.4.0/delta-core_2.12-2.4.0.jar
+wget https://repo1.maven.org/maven2/com/amazonaws/aws-java-sdk-bundle/1.11.901/aws-java-sdk-bundle-1.11.901.jar 
+
+1. docker build -t spark-latest .
+2. Start the master and worker using docker-compose
+3. cd /home/spark/code/spark-latest
+3. docker run -it --name driver --rm --memory=2G -v /Users/bhavyamurthy/Git/spark/:/home/spark/ --network=spark-latest_spark-network-latest spark-latest /opt/spark/bin/pyspark --packages io.delta:delta-core_2.12:2.4.0,org.apache.hadoop:hadoop-aws:3.3.1 --jars /opt/spark/jars/delta-core_2.12-2.4.0.jar,/opt/spark/jars/aws-java-sdk-bundle-1.11.901.jar,/opt/spark/jars/delta-storage-2.4.0.jar --master spark://spark-master-latest:7077

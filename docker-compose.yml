@@ -1,0 +1,44 @@
+version: "3.7"
+services:
+  spark-master-latest:
+    image: custom-spark
+    container_name: spark-master-latest
+    ports:
+      - "5005:7077"
+      - "5006:8080"
+    command: bash -c "/opt/spark/sbin/start-master.sh && tail -f /opt/spark/logs/*.out"
+    env_file:
+      - .env
+    environment:
+      - SPARK_MODE=master
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+    networks:
+      - spark-network-latest
+  spark-worker-1:
+    image: custom-spark
+    container_name: spark-worker-latest-1
+    depends_on:
+      - spark-master-latest
+    command: bash -c "/opt/spark/sbin/start-worker.sh spark://spark-master-latest:7077 && tail -f /opt/spark/logs/*.out"
+    env_file:
+      - .env
+    environment:
+      - SPARK_MODE=worker
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+      - SPARK_WORKER_OPTS=-Dspark.worker.cleanup.enabled=true -Dspark.worker.cleanup.appDataTtl=600 
+      - SPARK_WORKER_WEBUI_PORT=5007
+    networks:
+      - spark-network-latest
+    ports:
+      - "5007:5007"
+    volumes:
+      - /Users/bhavyamurthy/Git/spark/:/home/spark/
+      #- /home/spark/sample_driver_code/spark-latest:/opt/spark/conf/log4j.properties
+      #- /Users/bhavyamurthy/Git/spark/sample_driver_code/spark-latest:/opt/spark/conf/log4j.properties
+      #- /Users/bhavyamurthy/Git/spark/sample_driver_code/spark-latest/spark-defaults.conf:/opt/spark/conf/spark-defaults.conf
+networks:
+  spark-network-latest:
